@@ -2,5 +2,4 @@ streamlit
 pandas
 matplotlib
 numpy
-base64
 reportlab
