@@ -22,7 +22,7 @@ Dieses Programm hilft Ihnen dabei, eine spezifische KI-Initiative zu bewerten un
 Bitte geben Sie die erforderlichen Informationen zu Ihrem Projekt ein und durchlaufen Sie die Schritte zur Bewertung.
 """)
 
-# Sidebar für Navigation
+# Sidebar für die Navigation
 st.sidebar.title("Navigation")
 steps = [
     "0. Projektinformationen",
