@@ -1,56 +1,92 @@
-#steps/step3.py
 import streamlit as st
+
 def run_step3():
     st.header("3. Scalability, Sustainability, and Feasibility")
     with st.expander("Instructions"):
-        st.write("Evaluate the project's ability to handle future growth, be sustainable in the long term, and its technical feasibility on a scale from 1 to 10 (low to high).")
-    
+        st.write("Evaluate the project's ability to handle future growth, be sustainable in the long term, "
+                 "and its technical feasibility on a scale from 0 to 10 (low to high).")
+
+    # Custom scale descriptions for each slider category
+    SCALE_DESCRIPTIONS = {
+        "scalability": {
+            0: "Cannot scale at all",
+            10: "Scales perfectly to any growth"
+        },
+        "sustainability": {
+            0: "Not sustainable at all",
+            10: "Completely sustainable for the long term"
+        },
+        "technical_feasibility": {
+            0: "Technically impossible",
+            10: "Easily implementable"
+        },
+        "data_availability": {
+            0: "No data available or poor quality",
+            10: "Complete, high-quality data readily available"
+        },
+        "technical_skills": {
+            0: "No relevant technical skills in the team",
+            10: "Highly skilled technical team"
+        },
+        "tech_compatibility": {
+            0: "Completely incompatible",
+            10: "Fully compatible with existing infrastructure"
+        }
+    }
+
     # Formular für die Hauptbewertung
     with st.form(key='scalability_sustainability'):
         scalability = st.slider(
             "3.1 Scalability of the Project:",
-            min_value=1,
+            min_value=0,
             max_value=10,
             value=st.session_state.data.get('Scalability', 5),
-            help="Evaluate how well the project can handle increasing load."
+            help=f"Scale: 0 = '{SCALE_DESCRIPTIONS['scalability'][0]}', "
+                 f"10 = '{SCALE_DESCRIPTIONS['scalability'][10]}'"
         )
         sustainability = st.slider(
             "3.2 Sustainability of the Project:",
-            min_value=1,
+            min_value=0,
             max_value=10,
             value=st.session_state.data.get('Sustainability', 5),
-            help="Evaluate the long-term viability of the project."
+            help=f"Scale: 0 = '{SCALE_DESCRIPTIONS['sustainability'][0]}', "
+                 f"10 = '{SCALE_DESCRIPTIONS['sustainability'][10]}'"
         )
         technical_level = st.slider(
-            "3.3 Technical Feasability:",
-            min_value=1,
+            "3.3 Technical Feasibility:",
+            min_value=0,
             max_value=10,
             value=st.session_state.data.get('Technical Feasability', 5),
-            help="Evaluate the technical complexity of the project. The lower value the higher the complexity"
+            help=f"Scale: 0 = '{SCALE_DESCRIPTIONS['technical_feasibility'][0]}', "
+                 f"10 = '{SCALE_DESCRIPTIONS['technical_feasibility'][10]}'"
         )
         data_availability = st.slider(
             "3.4 Data Availability and Quality:",
-            min_value=1,
+            min_value=0,
             max_value=10,
             value=st.session_state.data.get('Data Availability', 5),
-            help="Evaluate the availability and quality of the required data."
+            help=f"Scale: 0 = '{SCALE_DESCRIPTIONS['data_availability'][0]}', "
+                 f"10 = '{SCALE_DESCRIPTIONS['data_availability'][10]}'"
         )
         technical_skills = st.slider(
             "3.5 Technical Skills in the Team:",
-            min_value=1,
+            min_value=0,
             max_value=10,
             value=st.session_state.data.get('Technical Skills', 5),
-            help="Evaluate the technical skills of your team to implement the project."
+            help=f"Scale: 0 = '{SCALE_DESCRIPTIONS['technical_skills'][0]}', "
+                 f"10 = '{SCALE_DESCRIPTIONS['technical_skills'][10]}'"
         )
         tech_compatibility = st.slider(
             "3.6 Technology Compatibility with Existing IT Infrastructure:",
-            min_value=1,
+            min_value=0,
             max_value=10,
             value=st.session_state.data.get('Technology Compatibility', 5),
-            help="Evaluate how well the project fits into your existing IT infrastructure."
+            help=f"Scale: 0 = '{SCALE_DESCRIPTIONS['tech_compatibility'][0]}', "
+                 f"10 = '{SCALE_DESCRIPTIONS['tech_compatibility'][10]}'"
         )
+
         submitted = st.form_submit_button("Save")
-    
+
     # Risiko-Abschnitt außerhalb des Formulars
     st.subheader("3.4 Risk Assessment")
     risks = st.session_state.data.get('Risks', [])
@@ -96,13 +132,10 @@ def run_step3():
             st.write(f"- Probability: {risk['probability']}")
             st.write(f"- Impact: {risk['impact']}")
             st.write(f"- **Expected Risk: {risk['expected_risk']}**")
-            # Risiko-Entfernungsbutton außerhalb eines Formulars
             if st.button(f"Remove Risk {idx+1}", key=f"remove_risk_{idx}"):
                 risks.pop(idx)
                 st.session_state.data['Risks'] = risks
                 st.success(f"Risk '{risk['name']}' removed.")
-                # Lösung: Keine Neuladung, sondern Daten direkt aktualisieren
-                # st.query_params(**st.session_state.data)  # Optional
                 st.stop()  # Stoppt die Ausführung und aktualisiert die Ansicht
 
     # Daten speichern

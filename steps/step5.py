@@ -5,28 +5,27 @@ import pandas as pd
 def run_step5():
     st.header("5. Advanced Utility Analysis and Overall Score")
 
-    st.write("Please assign a weight between 1 and 10 for each criterion (1 = not important, 10 = very important).")
+    st.write("Please assign a weight between 0 and 100 for each criterion (0 = not important, 100 = very important).")
 
     # Weightings Form
     with st.form(key='weightings'):
         # Qualitative Criteria
         st.subheader("Weights for Qualitative Criteria")
-        scalability_weight = st.slider("Weight for Scalability:", 1, 10, 5)
-        sustainability_weight = st.slider("Weight for Sustainability:", 1, 10, 5)
-        technical_feasability_weight = st.slider("Weight for Technical Feasibility:", 1, 10, 5)
-        data_availability_weight = st.slider("Weight for Data Availability and Quality:", 1, 10, 5)
-        technical_skills_weight = st.slider("Weight for Technical Skills in the Team:", 1, 10, 5)
-        tech_compatibility_weight = st.slider("Weight for Technology Compatibility:", 1, 10, 5)
+        scalability_weight = st.slider("Weight for Scalability:", 0, 100, 50)
+        sustainability_weight = st.slider("Weight for Sustainability:", 0, 100, 50)
+        technical_feasability_weight = st.slider("Weight for Technical Feasibility:", 0, 100, 50)
+        data_availability_weight = st.slider("Weight for Data Availability and Quality:", 0, 100, 50)
+        technical_skills_weight = st.slider("Weight for Technical Skills in the Team:", 0, 100, 50)
+        tech_compatibility_weight = st.slider("Weight for Technology Compatibility:", 0, 100, 50)
 
         # Financial Criteria
         st.subheader("Weights for Financial Criteria")
-        roi_weight = st.slider("Weight for ROI:", 1, 10, 5)
-        break_even_weight = st.slider("Weight for Break-Even Point:", 1, 10, 5)
-        #profit_weight = st.slider("Weight for Estimated Profit:", 1, 10, 5)
+        roi_weight = st.slider("Weight for ROI:", 0, 100, 50)
+        break_even_weight = st.slider("Weight for Break-Even Point:", 0, 100, 50)
 
         # Risk Criterion
         st.subheader("Weight for Risk Criterion")
-        risk_weight = st.slider("Weight for Risk:", 1, 10, 5)
+        risk_weight = st.slider("Weight for Risk:", 0, 100, 50)
 
         submitted = st.form_submit_button("Calculate")
 
@@ -35,13 +34,35 @@ def run_step5():
         data = st.session_state.data
 
         # Check if all necessary data is available
-        required_fields = ['Scalability', 'Sustainability', 'Technical Feasability',
-                           'Data Availability', 'Technical Skills', 'Technology Compatibility',
-                           'Development Costs', 'Risk Buffer', 'Annual Costs',
-                           'Annual Revenue', 'Years to Analyze', 'Risks']
+        required_fields = [
+            'Scalability', 'Sustainability', 'Technical Feasability',
+            'Data Availability', 'Technical Skills', 'Technology Compatibility',
+            'Development Costs', 'Risk Buffer', 'Annual Costs',
+            'Annual Revenue', 'Years to Analyze', 'Risks'
+        ]
         if not all(field in data for field in required_fields):
             st.error("Please ensure all previous steps are completed.")
             return
+
+        # Red Flag Check: Verify Step 3 values
+        step3_values = {
+            "Scalability": data.get('Scalability', None),
+            "Sustainability": data.get('Sustainability', None),
+            "Technical Feasability": data.get('Technical Feasability', None),
+            "Data Availability and Quality": data.get('Data Availability', None),
+            "Technical Skills in the Team": data.get('Technical Skills', None),
+            "Technology Compatibility": data.get('Technology Compatibility', None)
+        }
+
+        zero_categories = [key for key, value in step3_values.items() if value == 0]
+
+        if zero_categories:
+            # Display the Red Flag Error
+            st.error(
+                f"Red Flag: You have chosen '0' for the following Step 3 categories: {', '.join(zero_categories)}. "
+                "Thereby, the project cannot be approved. Please go back to Step 3 and adjust these values."
+            )
+            return  # Stop further execution of Step 5
 
         # Qualitative Scores
         qualitative_scores = {
@@ -55,8 +76,14 @@ def run_step5():
 
         # Financial Calculations
         total_fixed_costs = data['Development Costs'] + data['Risk Buffer']
-        cumulative_costs = [total_fixed_costs + data['Annual Costs'] * year for year in range(data['Years to Analyze'] + 1)]
-        cumulative_revenues = [data['Annual Revenue'] * year for year in range(data['Years to Analyze'] + 1)]
+        cumulative_costs = [
+            total_fixed_costs + data['Annual Costs'] * year
+            for year in range(data['Years to Analyze'] + 1)
+        ]
+        cumulative_revenues = [
+            data['Annual Revenue'] * year
+            for year in range(data['Years to Analyze'] + 1)
+        ]
         total_costs = cumulative_costs[-1]
         total_revenue = cumulative_revenues[-1]
         estimated_profit = total_revenue - total_costs
@@ -92,20 +119,6 @@ def run_step5():
             break_even_score = 1
         financial_scores['Break-Even Point'] = (break_even_score, break_even_weight)
 
-        # Estimated Profit Normalization
-        #profit_ratio = estimated_profit / total_costs if total_costs > 0 else 0
-        #if profit_ratio <= 0:
-        #    profit_score = 1
-        #elif profit_ratio <= 0.1:
-        #    profit_score = 3
-        #elif profit_ratio <= 0.2:
-        #    profit_score = 5
-        #elif profit_ratio <= 0.3:
-        #    profit_score = 7
-        #else:
-        #    profit_score = 10
-        #financial_scores['Estimated Profit'] = (profit_score, profit_weight)
-
         # Risk Normalization
         risks = data.get('Risks', [])
         num_risks = len(risks)
@@ -119,8 +132,12 @@ def run_step5():
         risk_scores = {'Risk': (normalized_risk_score, risk_weight)}
 
         # Calculate Total Utility Value
-        total_weight = sum(weight for _, weight in list(qualitative_scores.values()) +
-                           list(financial_scores.values()) + list(risk_scores.values()))
+        total_weight = sum(
+            weight
+            for _, weight in list(qualitative_scores.values()) +
+                            list(financial_scores.values()) +
+                            list(risk_scores.values())
+        )
         total_score = 0
 
         st.write("### Detailed Results:")
@@ -142,13 +159,7 @@ def run_step5():
             total_score += weighted_score
             st.write(f"- **{criterion}:** Normalized Score = {score:.2f}, Weight = {weight}, Utility Value = {weighted_score:.2f}")
 
-        # Calculate Normalized Total Score
-        normalized_total_score = total_score / total_weight
+        # Calculate Normalized Total Score (0-10 Scale)
+        normalized_total_score = total_score / total_weight if total_weight else 0
 
         st.success(f"The overall project score is: {normalized_total_score:.2f} out of 10")
-
-        # Display Total Expected Risk
-        #if risks:
-         #   total_expected_risk = sum(risk['expected_risk'] for risk in risks)
-          #  st.write(f"### Total Risk:")
-           # st.write(f"- **Cumulative Expected Risk:** {total_expected_risk}")
