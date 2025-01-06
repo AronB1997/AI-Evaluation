@@ -28,17 +28,16 @@ steps = [
     "0. Projektinformationen",
     "1. Geschäftsziele definieren",
     "2. KI-Einsatz beschreiben",
-    "3. Technische Machbarkeit bewerten",
-    "4. Kosten und Ressourcen schätzen",
-    "5. Umsatz, Kosten und ROI schätzen",
-    "6. Risikobewertung",
-    "7. Skalierbarkeit und Nachhaltigkeit",
-    "8. Erfolgsmessung definieren",
-    "9. Zusammenfassung der bisherigen Eingaben",
-    "10. Entscheidungsfindung",
-    "11. Implementierungsplanung",
-    "12. Überwachung und Evaluierung",
-    "13. Nutzwertanalyse",
+    "3. Kosten und Ressourcen schätzen",
+    "4. Umsatz, Kosten und ROI schätzen",
+    "5. Risikobewertung",
+    "6. Skalierbarkeit, Nachhaltigkeit und Machbarkeit",
+    "7. Erfolgsmessung definieren",
+    "8. Zusammenfassung der bisherigen Eingaben",
+    "9. Entscheidungsfindung",
+    "10. Implementierungsplanung",
+    "11. Überwachung und Evaluierung",
+    "12. Nutzwertanalyse",
     "Bericht generieren",
 ]
 
@@ -170,46 +169,12 @@ def step2():
         next_step()
 
 def step3():
-    st.header("3. Technische Machbarkeit bewerten")
-    with st.expander("Anleitung"):
-        st.write("Bewerten Sie die Datenverfügbarkeit, technische Fähigkeiten und Technologiekompatibilität auf einer Skala von 1 bis 10.")
-    with st.form(key='technische_machbarkeit'):
-        data_availability = st.slider(
-            "3.1 Datenverfügbarkeit und -qualität:",
-            min_value=1,
-            max_value=10,
-            value=st.session_state.data.get('Datenverfügbarkeit', 5),
-            help="Bewerten Sie die Verfügbarkeit und Qualität der erforderlichen Daten."
-        )
-        technical_skills = st.slider(
-            "3.2 Technische Fähigkeiten im Team:",
-            min_value=1,
-            max_value=10,
-            value=st.session_state.data.get('Technische Fähigkeiten', 5),
-            help="Bewerten Sie die technischen Fähigkeiten Ihres Teams zur Umsetzung des Projekts."
-        )
-        tech_compatibility = st.slider(
-            "3.3 Technologiekompatibilität mit bestehender IT-Infrastruktur:",
-            min_value=1,
-            max_value=10,
-            value=st.session_state.data.get('Technologiekompatibilität', 5),
-            help="Bewerten Sie, wie gut das Projekt in Ihre bestehende IT-Infrastruktur passt."
-        )
-        submitted = st.form_submit_button("Speichern")
-    if submitted:
-        st.session_state.data['Datenverfügbarkeit'] = data_availability
-        st.session_state.data['Technische Fähigkeiten'] = technical_skills
-        st.session_state.data['Technologiekompatibilität'] = tech_compatibility
-        st.success("Daten gespeichert.")
-        next_step()
-
-def step4():
-    st.header("4. Kosten und Ressourcen schätzen")
+    st.header("3. Kosten und Ressourcen schätzen")
     with st.expander("Anleitung"):
         st.write("Schätzen Sie die Entwicklungskosten, laufenden Betriebskosten und das Risikobudget für Ihr Projekt.")
     with st.form(key='kosten_ressourcen'):
         development_cost = st.number_input(
-            "4.1 Entwicklungskosten (€):",
+            "3.1 Entwicklungskosten (€):",
             min_value=0.0,
             step=1000.0,
             format="%.2f",
@@ -217,7 +182,7 @@ def step4():
             help="Einmalige Kosten für die Entwicklung des Projekts."
         )
         operational_cost = st.number_input(
-            "4.2 Laufende Betriebskosten pro Jahr (€):",
+            "3.2 Laufende Betriebskosten pro Jahr (€):",
             min_value=0.0,
             step=100.0,
             format="%.2f",
@@ -225,7 +190,7 @@ def step4():
             help="Jährliche Kosten für den Betrieb und die Wartung des Projekts."
         )
         risk_budget = st.number_input(
-            "4.3 Risikobudget (€):",
+            "3.3 Risikobudget (€):",
             min_value=0.0,
             step=1000.0,
             format="%.2f",
@@ -241,8 +206,8 @@ def step4():
         st.success("Daten gespeichert.")
         next_step()
 
-def step5():
-    st.header("5. Umsatz, Kosten und ROI schätzen")
+def step4():
+    st.header("4. Umsatz, Kosten und ROI schätzen")
     with st.expander("Anleitung"):
         st.write("Schätzen Sie den finanziellen Nutzen über die geplante Laufzeit des Projekts.")
 
@@ -490,8 +455,8 @@ def step5():
         next_step()
 
 
-def step6():
-    st.header("6. Risikobewertung")
+def step5():
+    st.header("5. Risikobewertung")
     with st.expander("Anleitung"):
         st.write("Identifizieren Sie potenzielle Risiken und bewerten Sie deren Wahrscheinlichkeit und Auswirkungen.")
     with st.form(key='risikobewertung'):
@@ -553,45 +518,77 @@ def step6():
         st.pyplot(fig)
         next_step()
 
-def step7():
-    st.header("7. Skalierbarkeit und Nachhaltigkeit")
+def step6():
+    st.header("6. Skalierbarkeit, Nachhaltigkeit und Machbarkeit")
     with st.expander("Anleitung"):
-        st.write("Bewerten Sie die Fähigkeit des Projekts, zukünftiges Wachstum zu bewältigen und langfristig nachhaltig zu sein, auf einer Skala von 1 bis 10.")
+        st.write("Bewerten Sie die Fähigkeit des Projekts, zukünftiges Wachstum zu bewältigen und langfristig nachhaltig zu sein sowie die technische Machbarkeit auf einer Skala von 1 bis 10 (niedrig bis hoch).")
     with st.form(key='skalierbarkeit_nachhaltigkeit'):
         scalability = st.slider(
-            "7.1 Skalierbarkeit des Projekts:",
+            "6.1 Skalierbarkeit des Projekts:",
             min_value=1,
             max_value=10,
             value=st.session_state.data.get('Skalierbarkeit', 5),
             help="Bewerten Sie, wie gut das Projekt mit zunehmender Last umgehen kann."
         )
         sustainability = st.slider(
-            "7.2 Nachhaltigkeit des Projekts:",
+            "6.2 Nachhaltigkeit des Projekts:",
             min_value=1,
             max_value=10,
             value=st.session_state.data.get('Nachhaltigkeit', 5),
             help="Bewerten Sie die langfristige Tragfähigkeit des Projekts."
         )
+        technical_level = st.slider(
+            "6.3 Technische Schwierigkeit:",
+            min_value=1,
+            max_value=10,
+            value=st.session_state.data.get('Techschnisher Schwierigkeitsgrad', 5),
+            help="Bewerten Sie die technische Komplexität des Projekts."
+        )
+        data_availability = st.slider(
+            "6.4 Datenverfügbarkeit und -qualität:",
+            min_value=1,
+            max_value=10,
+            value=st.session_state.data.get('Datenverfügbarkeit', 5),
+            help="Bewerten Sie die Verfügbarkeit und Qualität der erforderlichen Daten."
+        )
+        technical_skills = st.slider(
+            "6.5 Technische Fähigkeiten im Team:",
+            min_value=1,
+            max_value=10,
+            value=st.session_state.data.get('Technische Fähigkeiten', 5),
+            help="Bewerten Sie die technischen Fähigkeiten Ihres Teams zur Umsetzung des Projekts."
+        )
+        tech_compatibility = st.slider(
+            "6.6 Technologiekompatibilität mit bestehender IT-Infrastruktur:",
+            min_value=1,
+            max_value=10,
+            value=st.session_state.data.get('Technologiekompatibilität', 5),
+            help="Bewerten Sie, wie gut das Projekt in Ihre bestehende IT-Infrastruktur passt."
+        )
         submitted = st.form_submit_button("Speichern")
     if submitted:
         st.session_state.data['Skalierbarkeit'] = scalability
         st.session_state.data['Nachhaltigkeit'] = sustainability
+        st.session_state.data['Technischer Schwierigkeitsgrad'] = technical_level
+        st.session_state.data['Datenverfügbarkeit'] = data_availability
+        st.session_state.data['Technische Fähigkeiten im Team'] = technical_skills
+        st.session_state.data['Technologiekompatibilität'] = tech_compatibility
         st.success("Daten gespeichert.")
         next_step()
 
-def step8():
-    st.header("8. Erfolgsmessung definieren")
+def step7():
+    st.header("7. Erfolgsmessung definieren")
     with st.expander("Anleitung"):
         st.write("Definieren Sie Metriken, um den Erfolg des Projekts zu messen.")
     with st.form(key='erfolgsmessung'):
         metrics = st.text_area(
-            "8.1 Metriken zur Erfolgsmessung (jeweils in einer neuen Zeile):",
+            "7.1 Metriken zur Erfolgsmessung (jeweils in einer neuen Zeile):",
             height=150,
             value='\n'.join(st.session_state.data.get('Erfolgsmessungsmetriken', [])),
             help="Listen Sie spezifische Metriken auf, die den Erfolg des Projekts messen."
         )
         targets = st.text_area(
-            "8.2 Zielwerte für diese Metriken (jeweils in einer neuen Zeile):",
+            "7.2 Zielwerte für diese Metriken (jeweils in einer neuen Zeile):",
             height=150,
             value='\n'.join(st.session_state.data.get('Zielwerte', [])),
             help="Definieren Sie Zielwerte für die genannten Metriken."
@@ -603,8 +600,8 @@ def step8():
         st.success("Daten gespeichert.")
         next_step()
 
-def step9():
-    st.header("9. Zusammenfassung der bisherigen Eingaben")
+def step8():
+    st.header("8. Zusammenfassung der bisherigen Eingaben")
     with st.expander("Anleitung"):
         st.write("Hier sehen Sie eine Übersicht Ihrer bisherigen Eingaben. Überprüfen Sie die Informationen und nutzen Sie diese Zusammenfassung als Grundlage für Ihre Entscheidungsfindung im nächsten Schritt.")
     if st.session_state.data:
@@ -628,20 +625,20 @@ def step9():
     if st.button("Weiter zur Entscheidungsfindung"):
         next_step()
 
-def step10():
-    st.header("10. Entscheidungsfindung")
+def step9():
+    st.header("9. Entscheidungsfindung")
     with st.expander("Anleitung"):
         st.write("Treffen Sie eine fundierte Entscheidung basierend auf den bisherigen Analysen.")
     decision_options = ["", "Projekt durchführen", "Projekt verschieben", "Projekt ablehnen"]
     with st.form(key='entscheidungsfindung'):
         decision = st.selectbox(
-            "10.1 Entscheidung:",
+            "9.1 Entscheidung:",
             decision_options,
             index=decision_options.index(st.session_state.data.get('Entscheidung', '')) if st.session_state.data.get('Entscheidung', '') in decision_options else 0,
             help="Wählen Sie eine Entscheidung basierend auf der Bewertung."
         )
         reasoning = st.text_area(
-            "10.2 Begründung der Entscheidung:",
+            "9.2 Begründung der Entscheidung:",
             height=150,
             value=st.session_state.data.get('Begründung', ''),
             help="Begründen Sie Ihre Entscheidung mit den wichtigsten Argumenten."
@@ -653,25 +650,25 @@ def step10():
         st.success("Daten gespeichert.")
         next_step()
 
-def step11():
-    st.header("11. Implementierungsplanung")
+def step10():
+    st.header("10. Implementierungsplanung")
     with st.expander("Anleitung"):
         st.write("Erstellen Sie einen detaillierten Plan für die Umsetzung des Projekts.")
     with st.form(key='implementierungsplanung'):
         project_plan = st.text_area(
-            "11.1 Projektplan (Phasen, Meilensteine, Zeitpläne):",
+            "10.1 Projektplan (Phasen, Meilensteine, Zeitpläne):",
             height=150,
             value=st.session_state.data.get('Projektplan', ''),
             help="Skizzieren Sie den Projektplan mit Phasen und Meilensteinen."
         )
         roles = st.text_area(
-            "11.2 Rollen und Verantwortlichkeiten (jeweils in einer neuen Zeile):",
+            "10.2 Rollen und Verantwortlichkeiten (jeweils in einer neuen Zeile):",
             height=150,
             value='\n'.join(st.session_state.data.get('Rollen und Verantwortlichkeiten', [])),
             help="Definieren Sie die Rollen und Verantwortlichkeiten im Projektteam."
         )
         resources = st.text_area(
-            "11.3 Benötigte Ressourcen:",
+            "10.3 Benötigte Ressourcen:",
             height=150,
             value=st.session_state.data.get('Benötigte Ressourcen', ''),
             help="Listen Sie die Ressourcen auf, die für das Projekt benötigt werden."
@@ -684,19 +681,19 @@ def step11():
         st.success("Daten gespeichert.")
         next_step()
 
-def step12():
-    st.header("12. Überwachung und Evaluierung")
+def step11():
+    st.header("11. Überwachung und Evaluierung")
     with st.expander("Anleitung"):
         st.write("Planen Sie, wie Sie den Fortschritt und Erfolg des Projekts überwachen und bewerten werden.")
     with st.form(key='ueberwachung_evaluierung'):
         monitoring = st.text_area(
-            "12.1 Leistungsüberwachung (Methoden, Frequenz):",
+            "11.1 Leistungsüberwachung (Methoden, Frequenz):",
             height=150,
             value=st.session_state.data.get('Leistungsüberwachung', ''),
             help="Beschreiben Sie, wie Sie die Leistung überwachen werden."
         )
         reviews = st.text_area(
-            "12.2 Regelmäßige Überprüfungen (Zeitpläne, Verantwortliche):",
+            "11.2 Regelmäßige Überprüfungen (Zeitpläne, Verantwortliche):",
             height=150,
             value=st.session_state.data.get('Regelmäßige Überprüfungen', ''),
             help="Planen Sie regelmäßige Überprüfungen und wer daran beteiligt ist."
@@ -708,18 +705,19 @@ def step12():
         st.success("Daten gespeichert.")
         next_step()
 
-def step13():
-    st.header("13. Nutzwertanalyse")
+def step12():
+    st.header("12. Nutzwertanalyse")
     with st.expander("Anleitung"):
         st.write("Analysieren Sie die gesammelten Bewertungen in einem Scoring-Modell.")
     with st.form(key='nutzwertanalyse'):
         # Sammlung der numerischen Bewertungen
         scores = {
+            'Skalierbarkeit': st.session_state.data.get('Skalierbarkeit', 0),
+            'Nachhaltigkeit': st.session_state.data.get('Nachhaltigkeit', 0),
+            'Technischer Schwierigkeitsgrad': st.session_state.data.get('Technischer Schwierigkeitsgrad', 0),
             'Datenverfügbarkeit': st.session_state.data.get('Datenverfügbarkeit', 0),
             'Technische Fähigkeiten': st.session_state.data.get('Technische Fähigkeiten', 0),
-            'Technologiekompatibilität': st.session_state.data.get('Technologiekompatibilität', 0),
-            'Skalierbarkeit': st.session_state.data.get('Skalierbarkeit', 0),
-            'Nachhaltigkeit': st.session_state.data.get('Nachhaltigkeit', 0)
+            'Technologiekompatibilität': st.session_state.data.get('Technologiekompatibilität', 0)
         }
 
         # Anpassbare Gewichtungen
@@ -869,28 +867,26 @@ elif selected_step == "1. Geschäftsziele definieren":
     step1()
 elif selected_step == "2. KI-Einsatz beschreiben":
     step2()
-elif selected_step == "3. Technische Machbarkeit bewerten":
+elif selected_step == "3. Kosten und Ressourcen schätzen":
     step3()
-elif selected_step == "4. Kosten und Ressourcen schätzen":
+elif selected_step == "4. Umsatz, Kosten und ROI schätzen":
     step4()
-elif selected_step == "5. Umsatz, Kosten und ROI schätzen":
+elif selected_step == "5. Risikobewertung":
     step5()
-elif selected_step == "6. Risikobewertung":
+elif selected_step == "6. Skalierbarkeit, Nachhaltigkeit und Machbarkeit":
     step6()
-elif selected_step == "7. Skalierbarkeit und Nachhaltigkeit":
+elif selected_step == "7. Erfolgsmessung definieren":
     step7()
-elif selected_step == "8. Erfolgsmessung definieren":
+elif selected_step == "8. Zusammenfassung der bisherigen Eingaben":
     step8()
-elif selected_step == "9. Zusammenfassung der bisherigen Eingaben":
+elif selected_step == "9. Entscheidungsfindung":
     step9()
-elif selected_step == "10. Entscheidungsfindung":
+elif selected_step == "10. Implementierungsplanung":
     step10()
-elif selected_step == "11. Implementierungsplanung":
+elif selected_step == "11. Überwachung und Evaluierung":
     step11()
-elif selected_step == "12. Überwachung und Evaluierung":
+elif selected_step == "12. Nutzwertanalyse":
     step12()
-elif selected_step == "13. Nutzwertanalyse":
-    step13()
 elif selected_step == "Bericht generieren":
     generate_report()
 else:

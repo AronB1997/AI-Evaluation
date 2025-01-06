@@ -8,7 +8,8 @@ from io import BytesIO
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
-import sqlite3  # Hinzugefügt für die Datenbankfunktionalität
+import sqlite3
+import threading
 
 st.set_page_config(page_title="KI-Initiativen Bewertungsprogramm", layout="wide")
 
@@ -20,43 +21,21 @@ if 'progress' not in st.session_state:
 if 'data' not in st.session_state:
     st.session_state.data = {}
 
-# Datenbankverbindung
-conn = sqlite3.connect('ki_initiativen.db')
-c = conn.cursor()
+def get_db_connection():
+    # Öffnet eine neue Verbindung pro Aufruf, um Probleme mit Threads zu vermeiden
+    return sqlite3.connect('ki_initiativen.db', check_same_thread=False)
 
-# Tabelle erstellen, falls nicht vorhanden
-c.execute('''
-CREATE TABLE IF NOT EXISTS initiativen (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    projektname TEXT,
-    projektbeschreibung TEXT,
-    projektverantwortlicher TEXT,
-    strategische_ziele TEXT,
-    kpis TEXT,
-    ausrichtung TEXT,
-    ki_technologie TEXT,
-    zweck TEXT,
-    anwendungsbereich TEXT,
-    art_der_innovation TEXT,
-    kosten TEXT,
-    umsatz_roi TEXT,
-    risiken TEXT,
-    skalierbarkeit_nachhaltigkeit TEXT,
-    erfolgsmessung TEXT,
-    entscheidung TEXT,
-    implementierung TEXT,
-    ueberwachung TEXT,
-    nutzwertanalyse TEXT,
-    gesamtbewertung REAL
-)
-''')
-
+# Funktion zum Speichern der Initiative in die Datenbank
 def save_initiative(data):
+    # Jede Operation bekommt eine neue Verbindung und Cursor
+    conn = get_db_connection()
+    c = conn.cursor()
+
     # Autosave in die Datenbank: Wandelt die Daten in JSON-Formate und speichert sie
     strategic_goals = json.dumps(data.get('Strategische Ziele', []))
     kpis = json.dumps(data.get('KPIs', []))
     risks = json.dumps(data.get('Risiken', []))
-    
+
     # Eintrag in die Datenbank
     c.execute('''
         INSERT INTO initiativen (
@@ -127,18 +106,21 @@ def save_initiative(data):
             'leistungsüberwachung': data.get('Leistungsüberwachung', ''),
             'regelmäßige_überprüfungen': data.get('Regelmäßige Überprüfungen', '')
         }),
-        json.dumps({
-            'gewichtungen': data.get('Gewichtungen', {}),
-            'gewichtete_bewertungen': data.get('Gewichtete Bewertungen', {})
-        }),
         data.get('Gesamtbewertung', 0.0)
     ))
-    conn.commit()
 
+    conn.commit()
+    conn.close()  # Wichtig: Verbindung immer schließen
+
+
+
+# Autosave-Funktion
 def autosave():
-    # Diese Funktion speichert die Eingaben automatisch
-    save_initiative(st.session_state.data)
-    st.sidebar.success('Daten automatisch gespeichert.')
+    if st.session_state.data:
+        save_initiative(st.session_state.data)
+        st.sidebar.success('Daten automatisch gespeichert.')
+
+
 
 # Zusätzliche Validierung: Überprüfung, ob alle erforderlichen Felder ausgefüllt sind
 def validate_input(field, field_name):
@@ -187,7 +169,7 @@ def step0():
         next_step()
     
     # Weiter-Button zur Navigation zum nächsten Schritt mit Validierung
-    if st.button('Weiter'):
+    if st.button('Weiter', key='weiter_step0'):
         valid_name = validate_input(project_name, 'Projektname')
         valid_description = validate_input(project_description, 'Projektbeschreibung')
         valid_manager = validate_input(project_manager, 'Projektverantwortlicher')
@@ -250,7 +232,7 @@ def step1():
         help="Beschreiben Sie, wie dieses Projekt Ihre Geschäftsziele unterstützt."
     )
   # +++NEU+++ Weiter-Button zur Navigation mit Validierung
-    if st.button('Weiter'):  # Button wird jetzt für Weiter und Speichern verwendet
+    if st.button('Weiter', key='weiter_step1'):  # Button wird jetzt für Weiter und Speichern verwendet
         st.session_state.data['Strategische Ziele'] = strategic_goals.split('\n')
         st.session_state.data['KPIs'] = kpis.split('\n')
         st.session_state.data['Ausrichtung auf Geschäftsziele'] = alignment
@@ -297,12 +279,12 @@ def step2():
         )
        
   # Weiter-Button zur Navigation mit Validierung und Autosave
-    if st.button('Weiter'):
+    if st.button('Weiter', key='weiter_step2'):
     # Speichern der Eingaben
-    st.session_state.data['Art der KI-Technologie'] = ai_technology
-    st.session_state.data['Zweck des KI-Einsatzes'] = ai_purpose
-    st.session_state.data['Anwendungsbereich'] = application_area
-    st.session_state.data['Art der Innovation'] = innovation_type
+        st.session_state.data['Art der KI-Technologie'] = ai_technology
+        st.session_state.data['Zweck des KI-Einsatzes'] = ai_purpose
+        st.session_state.data['Anwendungsbereich'] = application_area
+        st.session_state.data['Art der Innovation'] = innovation_type
 
     # Validierung der Eingaben
     valid_technology = validate_input(ai_technology, 'Art der KI-Technologie')
@@ -342,11 +324,11 @@ def step3():
         )
   
     # Weiter-Button zur Navigation mit Validierung und Autosave
-    if st.button('Weiter'):
+    if st.button('Weiter', key='weiter_step3'):
     # Speichern der Eingaben
-    st.session_state.data['Datenverfügbarkeit'] = data_availability
-    st.session_state.data['Technische Fähigkeiten'] = technical_skills
-    st.session_state.data['Technologiekompatibilität'] = tech_compatibility
+        st.session_state.data['Datenverfügbarkeit'] = data_availability
+        st.session_state.data['Technische Fähigkeiten'] = technical_skills
+        st.session_state.data['Technologiekompatibilität'] = tech_compatibility
 
     # Validierung der Eingaben
     valid_data_availability = validate_input(data_availability, 'Datenverfügbarkeit')
@@ -388,12 +370,12 @@ def step4():
             help="Zusätzlicher Puffer für unvorhergesehene Risiken oder Mehrkosten."
         ) 
 # Weiter-Button zur Navigation mit Validierung und Autosave
-    if st.button('Weiter'):
+    if st.button('Weiter', key='weiter_step4'):
     # Speichern der Eingaben
-    st.session_state.data['Entwicklungskosten'] = development_cost
-    st.session_state.data['Laufende Betriebskosten'] = operational_cost
-    st.session_state.data['Risikobudget'] = risk_budget
-    st.session_state.data['Anfangsinvestition'] = development_cost + risk_budget
+        st.session_state.data['Entwicklungskosten'] = development_cost
+        st.session_state.data['Laufende Betriebskosten'] = operational_cost
+        st.session_state.data['Risikobudget'] = risk_budget
+        st.session_state.data['Anfangsinvestition'] = development_cost + risk_budget
 
     # Validierung der Eingaben
     valid_development_cost = validate_input(development_cost, 'Entwicklungskosten')
@@ -636,7 +618,7 @@ def step5():
         st.table(business_plan_df.set_index('Jahr'))
 
     # +++NEU+++ Weiter-Button zur Navigation mit Validierung und Autosave
-    if st.button('Weiter'):
+    if st.button('Weiter', key='weiter_step5'):
         # Speichern der Eingaben
         st.session_state.data['Projektlaufzeit (Jahre)'] = project_duration
         st.session_state.data['Anlaufzeit (Jahre)'] = ramp_up_time
@@ -702,7 +684,7 @@ def step6():
         }
 
     # +++NEU+++ Weiter-Button zur Navigation mit Validierung und Autosave
-    if st.button('Weiter'):
+    if st.button('Weiter', key='weiter_step6'):
         # Speichern der Risiken
         st.session_state.data['Risiken'] = risks
 
@@ -749,7 +731,7 @@ def step7():
     )
 
     # +++NEU+++ Weiter-Button zur Navigation mit Autosave
-    if st.button('Weiter'):
+    if st.button('Weiter', key='weiter_step7'):
         # Speichern der Eingaben
         st.session_state.data['Skalierbarkeit'] = scalability
         st.session_state.data['Nachhaltigkeit'] = sustainability
@@ -778,7 +760,7 @@ def step8():
     )
 
     # +++NEU+++ Weiter-Button zur Navigation mit Autosave
-    if st.button('Weiter'):
+    if st.button('Weiter', key='weiter_step8'):
         # Speichern der Eingaben
         st.session_state.data['Erfolgsmessungsmetriken'] = metrics.split('\n')
         st.session_state.data['Zielwerte'] = targets.split('\n')
@@ -812,7 +794,7 @@ def step9():
         st.warning("Es sind keine Daten vorhanden. Bitte füllen Sie zuerst die vorherigen Schritte aus.")
     
     # Weiter-Button zur Entscheidungsfindung
-    if st.button("Weiter zur Entscheidungsfindung"):
+    if st.button("Weiter zur Entscheidungsfindung", key='weiter_step9'):
         autosave()  # +++NEU+++ Speichern der Daten vor dem Weitergehen (falls erforderlich)
         next_step()  # Navigiere zum nächsten Schritt
 
@@ -839,7 +821,7 @@ def step10():
     )
 
     # +++NEU+++ Weiter-Button zur Navigation mit Autosave
-    if st.button('Weiter'):
+    if st.button('Weiter', key='weiter_step10'):
         # Speichern der Entscheidung und Begründung
         st.session_state.data['Entscheidung'] = decision
         st.session_state.data['Begründung'] = reasoning
@@ -874,7 +856,7 @@ def step11():
     )
 
     # +++NEU+++ Weiter-Button zur Navigation mit Autosave
-    if st.button('Weiter'):
+    if st.button('Weiter', key='weiter_step11'):
         # Speichern der Eingaben
         st.session_state.data['Projektplan'] = project_plan
         st.session_state.data['Rollen und Verantwortlichkeiten'] = roles.split('\n')
@@ -904,7 +886,7 @@ def step12():
     )
 
     # +++NEU+++ Weiter-Button zur Navigation mit Autosave
-    if st.button('Weiter'):
+    if st.button('Weiter', key='weiter_step12'):
         # Speichern der Eingaben
         st.session_state.data['Leistungsüberwachung'] = monitoring
         st.session_state.data['Regelmäßige Überprüfungen'] = reviews
@@ -1032,7 +1014,7 @@ def save_initiative(data):
     ))
     conn.commit()
 
-  def step13():
+def step13():
     st.header("13. Nutzwertanalyse")
     with st.expander("Anleitung"):
         st.write("Analysieren Sie die gesammelten Bewertungen in einem Scoring-Modell.")
@@ -1091,7 +1073,7 @@ def save_initiative(data):
     st.pyplot(fig)
 
     # +++NEU+++ Weiter-Button zur Navigation mit Autosave
-    if st.button('Weiter'):
+    if st.button('Weiter', key='weiter_step13'):
         # Speichern der Gesamtbewertung und gewichteten Scores
         st.session_state.data['Gesamtbewertung'] = total_score
         st.session_state.data['Gewichtete Bewertungen'] = weighted_scores
@@ -1105,7 +1087,6 @@ def save_initiative(data):
         st.success("Initiative wurde erfolgreich in der Datenbank gespeichert.")
         
         next_step()  # +++NEU+++ Navigiere zum nächsten Schritt
-
 
 
 def generate_report():
