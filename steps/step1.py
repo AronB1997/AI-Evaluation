@@ -1,4 +1,4 @@
-#steps/step1.py
+# steps/step1.py
 import streamlit as st
 
 def run_step1():
@@ -24,23 +24,20 @@ def run_step1():
             value='\n'.join(st.session_state.data.get('KPIs', [])),
             help="Define the KPIs that will measure progress toward your goals."
         )
-        alignment = st.text_area(
-            "1.4 Alignment of the Project with Business Objectives:",
-            height=150,
-            value=st.session_state.data.get('Alignment with Business Objectives', ''),
-            help="Describe how this project supports your business objectives."
-        )
-        alignment = st.text_area(
-            "1.5 Frequency of the target review:",
+        # Entfernt: Alignment of the Project with Business Objectives (1.4)
+        
+        frequency_review = st.text_area(
+            "1.4 Frequency of the Target Review:",
             height=150,
             value=st.session_state.data.get('Frequency target review', ''),
             help="Describe how the targets of the project will be monitored over time."
         )
         submitted = st.form_submit_button("Save")
+    
     if submitted:
-        st.session_state.data['Lagging Goals'] = lagging_goals.split('\n')
-        st.session_state.data['Leading Goals'] = leading_goals.split('\n')
-        st.session_state.data['KPIs'] = kpis.split('\n')
-        st.session_state.data['Alignment with Business Objectives'] = alignment
-        st.session_state.data['Frequency target review'] = alignment
+        st.session_state.data['Lagging Goals'] = [goal.strip() for goal in lagging_goals.split('\n') if goal.strip()]
+        st.session_state.data['Leading Goals'] = [goal.strip() for goal in leading_goals.split('\n') if goal.strip()]
+        st.session_state.data['KPIs'] = [kpi.strip() for kpi in kpis.split('\n') if kpi.strip()]
+        # Entfernt: st.session_state.data['Alignment with Business Objectives'] = alignment
+        st.session_state.data['Frequency target review'] = frequency_review
         st.success("Data saved.")

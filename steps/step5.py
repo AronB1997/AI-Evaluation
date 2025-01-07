@@ -11,12 +11,17 @@ def run_step5():
     with st.form(key='weightings'):
         # Qualitative Criteria
         st.subheader("Weights for Qualitative Criteria")
+        alignment_weight = st.slider("Weight for Alignment with Business Objectives:", 0, 100, 50)
+        time_capacity_weight = st.slider("Weight for Time Capacity:", 0, 100, 50)  # Neu hinzugefügt
         scalability_weight = st.slider("Weight for Scalability:", 0, 100, 50)
         sustainability_weight = st.slider("Weight for Sustainability:", 0, 100, 50)
         technical_feasability_weight = st.slider("Weight for Technical Feasibility:", 0, 100, 50)
-        data_availability_weight = st.slider("Weight for Data Availability and Quality:", 0, 100, 50)
-        technical_skills_weight = st.slider("Weight for Technical Skills in the Team:", 0, 100, 50)
+        technical_skills_weight = st.slider("Weight for Technical Skills in the Company:", 0, 100, 50)
         tech_compatibility_weight = st.slider("Weight for Technology Compatibility:", 0, 100, 50)
+
+        # Data-related Criteria
+        data_availability_weight = st.slider("Weight for Data Availability:", 0, 100, 50)
+        data_quality_weight = st.slider("Weight for Data Quality:", 0, 100, 50)
 
         # Financial Criteria
         st.subheader("Weights for Financial Criteria")
@@ -35,10 +40,12 @@ def run_step5():
 
         # Check if all necessary data is available
         required_fields = [
+            'Alignment with Business Objectives', 'Time Capacity',  # Time Capacity hinzugefügt
             'Scalability', 'Sustainability', 'Technical Feasability',
-            'Data Availability', 'Technical Skills', 'Technology Compatibility',
-            'Development Costs', 'Risk Buffer', 'Annual Costs',
-            'Annual Revenue', 'Years to Analyze', 'Risks'
+            'Technical Skills', 'Technology Compatibility',
+            'Data Availability', 'Data Quality',
+            'Development Costs', 'Risk Buffer',
+            'Annual Costs', 'Annual Revenue', 'Years to Analyze', 'Risks'
         ]
         if not all(field in data for field in required_fields):
             st.error("Please ensure all previous steps are completed.")
@@ -46,12 +53,15 @@ def run_step5():
 
         # Red Flag Check: Verify Step 3 values
         step3_values = {
+            "Alignment with Business Objectives": data.get('Alignment with Business Objectives', None),
+            "Time Capacity": data.get('Time Capacity', None),  # Neu hinzugefügt
             "Scalability": data.get('Scalability', None),
             "Sustainability": data.get('Sustainability', None),
-            "Technical Feasability": data.get('Technical Feasability', None),
-            "Data Availability and Quality": data.get('Data Availability', None),
-            "Technical Skills in the Team": data.get('Technical Skills', None),
-            "Technology Compatibility": data.get('Technology Compatibility', None)
+            "Technical Feasibility": data.get('Technical Feasability', None),
+            "Technical Skills in the Company": data.get('Technical Skills', None),
+            "Technology Compatibility": data.get('Technology Compatibility', None),
+            "Data Availability": data.get('Data Availability', None),
+            "Data Quality": data.get('Data Quality', None)
         }
 
         zero_categories = [key for key, value in step3_values.items() if value == 0]
@@ -66,12 +76,15 @@ def run_step5():
 
         # Qualitative Scores
         qualitative_scores = {
+            'Alignment with Business Objectives': (data['Alignment with Business Objectives'], alignment_weight),
+            'Time Capacity': (data['Time Capacity'], time_capacity_weight),  # Neu hinzugefügt
             'Scalability': (data['Scalability'], scalability_weight),
             'Sustainability': (data['Sustainability'], sustainability_weight),
-            'Technical Feasability': (data['Technical Feasability'], technical_feasability_weight),
-            'Data Availability and Quality': (data['Data Availability'], data_availability_weight),
-            'Technical Skills in the Team': (data['Technical Skills'], technical_skills_weight),
-            'Technology Compatibility': (data['Technology Compatibility'], tech_compatibility_weight)
+            'Technical Feasibility': (data['Technical Feasability'], technical_feasability_weight),
+            'Technical Skills in the Company': (data['Technical Skills'], technical_skills_weight),
+            'Technology Compatibility': (data['Technology Compatibility'], tech_compatibility_weight),
+            'Data Availability': (data['Data Availability'], data_availability_weight),
+            'Data Quality': (data['Data Quality'], data_quality_weight)
         }
 
         # Financial Calculations
@@ -123,7 +136,7 @@ def run_step5():
         risks = data.get('Risks', [])
         num_risks = len(risks)
         if num_risks > 0:
-            max_total_risk = 100 * num_risks  # Max risk per risk item is 100 (10 probability * 10 impact)
+            max_total_risk = 100 * num_risks  # Max: 10 probability * 10 impact = 100 pro Risk
             total_risk = sum(risk['probability'] * risk['impact'] for risk in risks)
             normalized_risk_score = 10 - (total_risk / max_total_risk * 10)
             normalized_risk_score = max(0, normalized_risk_score)  # Ensure score doesn't go negative
