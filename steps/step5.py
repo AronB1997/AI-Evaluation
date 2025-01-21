@@ -5,7 +5,10 @@ import pandas as pd
 def run_step5():
     st.header("5. Advanced Utility Analysis and Overall Score")
 
-    st.write("Please assign a weight between 0 and 100 for each criterion (0 = not important, 100 = very important).")
+    st.write("Please assign a weight between 0 and 100 to each criterion to indicate its importance for evaluating the project.  \n"
+    "A weight of 0 means the criterion is not important, while a weight of 100 means it is critically important."
+)
+
 
     # Weightings Form
     with st.form(key='weightings'):
