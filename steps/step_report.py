@@ -48,7 +48,7 @@ def run_step_report():
             financials, and risks. Use your knowledge and industry expertise to enhance the analysis,
             providing valuable insights beyond the given data.
 
-            # **Executive Summary**
+            # **Summary**
             Provide a high-level summary of the project's potential impact, scalability, and feasibility.
             Offer an industry-specific comparison to similar AI initiatives and outline major advantages
             and challenges that should be considered.
