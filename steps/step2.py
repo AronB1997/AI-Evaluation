@@ -1,5 +1,7 @@
 #steps/step2.py
 import streamlit as st
+from steps.utils import save_data_to_json
+
 
 def run_step2():
     st.header("2. Describe AI Usage")
@@ -37,4 +39,5 @@ def run_step2():
         st.session_state.data['Purpose of AI Usage'] = ai_purpose
         st.session_state.data['Application Area'] = application_area
         st.session_state.data['Type of Innovation'] = innovation_type
+        save_data_to_json(st.session_state.data)        
         st.success("Data saved.")

@@ -1,0 +1,66 @@
+{
+  "Project Name": "Discrete AI",
+  "Project Description": "This project involves developing an ERP module tailored for discrete manufacturing that integrates a Vision Transformer (ViT) model to detect production failures. The system will utilize image data from the production line to identify defects or anomalies in real-time, improving quality control processes. By incorporating machine learning into the ERP environment, the module will enhance decision-making and reduce manual inspection efforts. The solution aims to increase production efficiency, minimize downtime, and ensure consistent product quality. The module will be designed for seamless integration with existing ERP systems, providing manufacturers with actionable insights and automated alerts.",
+  "Idea Owner": "Baron Ünink",
+  "Idea Team": "Hermine, Harry, Ron, Malfoy",
+  "Innovation Manager": "Aron Brünink",
+  "Lagging Goals": [
+    "- Reduction in Production Failures",
+    "- Cost Reduction in Quality Control Processes"
+  ],
+  "Leading Goals": [
+    "- Accuracy of ViT Model in Detecting Defects",
+    "- Model Training and Data Quality Improvement"
+  ],
+  "KPIs": [
+    "- KPI: Percentage decrease in defective products identified post-production.",
+    "- KPI: Decrease in operational costs related to manual inspection and rework.",
+    "- KPI: Percentage accuracy rate of the Vision Transformer in identifying failures during production.",
+    "- KPI: Number of high-quality labeled images added to the training dataset and improvement in model performance metrics after each training cycle."
+  ],
+  "Frequency target review": "Weekly for the Leading Goals (Project team)\n\nWeekly for Lagging Goals (Idea Owner and Innovation Manager)\n\n",
+  "Type of AI Technology": "Computer Vision",
+  "Purpose of AI Usage": "To detect production failures in discrete manufacturing processes using a Vision Transformer (ViT) model. The AI system analyzes image data from the production line in real-time to identify defects, reduce manual inspections, and improve overall product quality.",
+  "Application Area": "Discrete Manufacturing, Quality Control, and Production Monitoring",
+  "Type of Innovation": "Completely New Solution",
+  "Risks": [
+    {
+      "name": "Accuracy and reliability of the Vision Transformer (ViT)",
+      "probability": 7,
+      "impact": 9,
+      "expected_risk": 63
+    }
+  ],
+  "Alignment with Business Objectives": 8,
+  "Time Capacity": 6,
+  "Scalability": 9,
+  "Sustainability": 8,
+  "Technical Feasability": 2,
+  "Technical Skills": 3,
+  "Technology Compatibility": 2,
+  "Data Availability": 2,
+  "Data Quality": 3,
+  "Development Costs": 1000.0,
+  "Risk Buffer": 500.0,
+  "Annual Costs": 1500.0,
+  "Annual Revenue": 2000.0,
+  "Years to Analyze": 6,
+  "weights": {
+    "Alignment with Business Objectives": 76,
+    "Time Capacity": 78,
+    "Scalability": 75,
+    "Sustainability": 72,
+    "Technical Feasibility": 92,
+    "Technical Skills": 91,
+    "Technology Compatibility": 91,
+    "Data Availability": 81,
+    "Data Quality": 81,
+    "ROI": 50,
+    "Break-Even Point": 50,
+    "Risk": 76
+  },
+  "final_score": 4.712157721796276,
+  "ROI": 33.33,
+  "Amortization Time": 3.0,
+  "Break-Even Point": 3.0
+}

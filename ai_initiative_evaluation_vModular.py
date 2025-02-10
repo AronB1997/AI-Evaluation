@@ -1,31 +1,36 @@
 import streamlit as st
+
+# Set page configuration at the very top
+st.set_page_config(page_title="AI Initiative Evaluation", layout="wide")
+
+# Import JSON functions from utils.py
+from steps.utils import load_data_from_json, save_data_to_json
+
+# Import steps
 from steps.step0 import run_step0
 from steps.step1 import run_step1
 from steps.step2 import run_step2
 from steps.step3 import run_step3
 from steps.step4 import run_step4
 from steps.step5 import run_step5
-#from steps.step6 import run_step6
-#from steps.step7 import run_step7
-#from steps.step8 import run_step8
-#from steps.step9 import run_step9
-#from steps.step10 import run_step10
-#from steps.step11 import run_step11
-#from steps.step12 import run_step12
-#from steps.report import generate_report
+from steps.step_report import run_step_report
+# from steps.step6 import run_step6
+# from steps.step7 import run_step7
+# from steps.step8 import run_step8
+# from steps.step9 import run_step9
+# ... ggf. weitere Steps ...
 
-# Globale Konfiguration
-st.set_page_config(page_title="AI Initiative Evaluation", layout="wide")
-
-# Fortschrittsanzeige initialisieren
-if 'progress' not in st.session_state:
-    st.session_state.progress = 0
-
-if 'data' not in st.session_state:
-    st.session_state.data = {}
-
+# Ensure Streamlit initializes the session state correctly
 if 'current_step' not in st.session_state:
-    st.session_state.current_step = 0
+    st.session_state.current_step = 0  # Start at step 0 on first run
+
+if 'progress' not in st.session_state:
+    st.session_state.progress = 0  # Initialize progress
+
+# Load session data if available
+if 'data' not in st.session_state:
+    loaded_data = load_data_from_json()  # <--- nutzt unsere Hilfsfunktion
+    st.session_state.data = loaded_data if loaded_data else {}
 
 # Schritte definieren
 steps = [
@@ -35,14 +40,11 @@ steps = [
     run_step3,
     run_step4,
     run_step5,
-    #run_step6,
-    #run_step7,
-    #run_step8,
-    #run_step9,
-    #run_step10,
-    #run_step11,
-    #run_step12,
-    #generate_report,
+    run_step_report,
+    # run_step6,
+    # run_step7,
+    # ...
+    # generate_report,
 ]
 
 step_names = [
@@ -55,11 +57,24 @@ step_names = [
     "6. Generate Report"
 ]
 
+# Ensure state updates correctly after first run
+if "force_reset" not in st.session_state:
+    st.session_state.force_reset = True  # Prevents auto-jumping to last step
+    st.session_state.current_step = 0  # Forces starting at step 0
+
 # Fortschrittsanzeige und Navigation
 st.sidebar.title("Navigation")
 selected_step = st.sidebar.radio(
-    "Schritte auswählen", range(len(steps)), format_func=lambda x: step_names[x]
+    "Schritte auswählen", 
+    range(len(steps)), 
+    index=st.session_state.current_step,  # Ensure correct step on start
+    format_func=lambda x: step_names[x]
 )
+
+# Update current step when selection changes
+st.session_state.current_step = selected_step
+
+# Fortschrittsanzeige
 st.sidebar.markdown("---")
 st.sidebar.write(f"Fortschritt: {int((selected_step + 1) / len(steps) * 100)}%")
 st.sidebar.progress((selected_step + 1) / len(steps))

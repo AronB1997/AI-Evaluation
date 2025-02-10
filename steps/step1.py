@@ -1,5 +1,7 @@
 # steps/step1.py
 import streamlit as st
+from steps.utils import save_data_to_json
+
 
 def run_step1():
     st.header("1. Define Business Objectives")
@@ -40,4 +42,5 @@ def run_step1():
         st.session_state.data['KPIs'] = [kpi.strip() for kpi in kpis.split('\n') if kpi.strip()]
         # Entfernt: st.session_state.data['Alignment with Business Objectives'] = alignment
         st.session_state.data['Frequency target review'] = frequency_review
+        save_data_to_json(st.session_state.data)
         st.success("Data saved.")

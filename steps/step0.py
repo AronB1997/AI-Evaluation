@@ -1,5 +1,7 @@
 #steps/step0.py
 import streamlit as st
+from steps.utils import save_data_to_json
+
 
 def run_step0():
     st.header("0. Project Information")
@@ -19,4 +21,6 @@ def run_step0():
         st.session_state.data['Idea Owner'] = idea_owner
         st.session_state.data['Idea Team'] = idea_team
         st.session_state.data['Innovation Manager'] = innovation_manager
+         # Hier kommt das Persistieren in die JSON-Datei:
+        save_data_to_json(st.session_state.data)
         st.success("Data saved.")

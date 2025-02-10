@@ -1,5 +1,7 @@
 # steps/step3.py
 import streamlit as st
+from steps.utils import save_data_to_json
+
 
 def run_step3():
     st.header("3. Scalability, Sustainability, and Feasibility")
@@ -301,4 +303,5 @@ def run_step3():
         st.session_state.data['Technology Compatibility'] = tech_compatibility
         st.session_state.data['Data Availability'] = data_availability
         st.session_state.data['Data Quality'] = data_quality
+        save_data_to_json(st.session_state.data)        
         st.success("Data saved.")
