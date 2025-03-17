@@ -1,5 +1,5 @@
 import streamlit as st
-import openai
+import requests
 
 # Retrieve API Key from Streamlit secrets
 try:
@@ -8,38 +8,32 @@ except KeyError:
     st.error("API Key not found. Please add your OpenAI API key to secrets.toml.")
     st.stop()
 
-# Verify that API Key is correctly formatted
 if not api_key.startswith("ai_"):
     st.error("Invalid API Key format. Please check your API key.")
     st.stop()
 
-# Set the custom API base URL for Cosmo Consult AI
+# Set the custom API base URL for Cosmo Consult AI Gateway
 base_url = "https://apis.ai.cosmoconsult.com/openai/v1"
 
 def run_step_report():
     st.header("7. Final AI-Generated Project Report")
     st.write("Review all collected data and generate a final summary or 'Exposé' using AI.")
 
-    # Check if data is available
     if 'data' not in st.session_state or not st.session_state.data:
         st.warning("No data found in session_state. Please complete previous steps first.")
         return
 
-    # Optional: Show collected data for debugging
     if st.checkbox("Show collected data (debug)"):
         st.json(st.session_state.data)
 
-    # Generate AI Report Button
     if st.button("Generate AI Report"):
         data = st.session_state.data
         roi = data.get("ROI", "N/A")
         amortization_time = data.get("Amortization Time", "N/A")
         break_even = data.get("Break-Even Point", "N/A")
 
-        # Extract risks from JSON
         risks = "\n".join([f"- {risk['name']} (Probability: {risk['probability']}, Impact: {risk['impact']}, Expected Risk: {risk['expected_risk']})" for risk in data.get('Risks', [])])
 
-        # Construct AI prompt
         messages = [
             {"role": "system", "content": "You are an AI assistant that generates structured project reports enriched with deep insights, industry knowledge, and critical analysis."},
             {"role": "user", "content": f"""
@@ -96,26 +90,32 @@ def run_step_report():
             """}
         ]
 
-        # OpenAI API Request with Custom Base URL and Correct Headers
-        client = openai.OpenAI(
-            api_key=api_key,
-            base_url=base_url
+        # Request payload for your API Gateway
+        payload = {
+            "model": "gpt-4o",
+            "messages": messages,
+            "max_tokens": 1500,
+            "temperature": 0.7
+        }
+
+        headers = {
+            "Content-Type": "application/json",
+            "api-key": api_key  # Custom header expected by your internal proxy
+        }
+
+        # Direct request to Cosmo Consult API Gateway
+        response = requests.post(
+            f"{base_url}/chat/completions",
+            json=payload,
+            headers=headers
         )
 
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=messages,
-            max_tokens=1500,
-            temperature=0.7,
-            extra_headers={"api-key": api_key}
-        )
+        if response.status_code != 200:
+            st.error(f"Request failed: {response.status_code} - {response.text}")
+            return
 
-        # Retrieve AI-generated report
-        report_text = response.choices[0].message.content.strip()
-
-        # Display AI-generated Report
+        report_text = response.json()["choices"][0]["message"]["content"].strip()
         st.subheader("AI-Generated Report")
         st.write(report_text)
 
-# Run the report generation function
 run_step_report()
